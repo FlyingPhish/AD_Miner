@@ -972,13 +972,14 @@ class Neo4j:
         It adds it to the requests_results dictionnary
         It is mainly populated with legacy code from domains.py, computers.py, etc
         """
-        computers_with_last_connection_date = requests_results[
-            "computers_not_connected_since"
-        ]
-        groups = requests_results["nb_groups"]
-        computers_nb_domain_controllers = requests_results["nb_domain_controllers"]
-        users_dormant_accounts = requests_results["dormant_accounts"]
-        users_nb_domain_admins = requests_results["nb_domain_admins"]
+        # Change direct accesses to .get() with empty list default
+        computers_with_last_connection_date = requests_results.get(
+            "computers_not_connected_since", []
+        )
+        groups = requests_results.get("nb_groups", [])
+        computers_nb_domain_controllers = requests_results.get("nb_domain_controllers", [])
+        users_dormant_accounts = requests_results.get("dormant_accounts", [])
+        users_nb_domain_admins = requests_results.get("nb_domain_admins", [])
 
         computers_not_connected_since_60 = list(
             filter(
@@ -1030,13 +1031,13 @@ class Neo4j:
             admin_list.append(admin["name"])
         requests_results["admin_list"] = admin_list
 
-        objects_to_domain_admin = requests_results["objects_to_domain_admin"]
+        objects_to_domain_admin = requests_results.get("objects_to_domain_admin", [])
         users_to_domain_admin = {}
         groups_to_domain_admin = {}
         computers_to_domain_admin = {}
         ou_to_domain_admin = {}
         gpo_to_domain_admin = {}
-        domains_to_domain_admin = {}
+        domains_to_domain_admin = []
 
         domains = requests_results["domains"]
         for domain in domains:

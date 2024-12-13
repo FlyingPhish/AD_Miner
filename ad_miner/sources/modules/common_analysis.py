@@ -535,47 +535,60 @@ def genNumberOfDCPage(requests_results, arguments):
 
 
 def genUsersListPage(requests_results, arguments):
+    """Generate the users list page with extended user information.
+    
+    Args:
+        requests_results (dict): Contains user data and domain admin information
+        arguments: Configuration arguments including cache prefix and renewal settings
+    """
     users = requests_results["nb_enabled_accounts"]
     users_nb_domain_admins = requests_results["nb_domain_admins"]
+    
+    # Page metadata
     dico_name_description_users = {
         "description": "List of all users on any domain",
         "risk": "N/A",
         "poa": "This control is rather informational and shall help getting a better understanding of the current objects.",
     }
 
-    admin_list = []
-    for admin in users_nb_domain_admins:
-        admin_list.append(admin["name"])
+    # Create admin list for efficient lookups
+    admin_list = [admin["name"] for admin in users_nb_domain_admins]
 
     if users is None:
         return
 
+    # Initialize page
     page = Page(
         arguments.cache_prefix,
         "users",
         "List of all users",
         dico_name_description_users,
     )
+    
+    # Setup grid with extended headers
     grid = Grid("Users")
-    grid.setheaders(["domain", "name", "last logon"])
+    grid.setheaders([
+        "domain",
+        "name", 
+        "last logon",
+        "Last password change",
+        "Account Creation Date"
+    ])
+
+    # Process user data
     data = []
     for user in users:
-        tmp_dict = {}
-        tmp_dict["domain"] = '<i class="bi bi-globe2"></i> ' + user["domain"]
-        # Add admin icon
-        if user["name"] in admin_list:
-            tmp_dict["name"] = (
-                '<i class="bi bi-gem" title="This user is domain admin"></i> '
-                + user["name"]
-            )
-        else:
-            tmp_dict["name"] = '<i class="bi bi-person-fill"></i> ' + user["name"]
-        # Add calendar icon
-        logon = -1
-        if user.get("logon"):
-            logon = user["logon"]
-        tmp_dict["last logon"] = days_format(logon)
+        tmp_dict = {
+            "domain": '<i class="bi bi-globe2"></i> ' + user["domain"],
+            "name": '<i class="bi bi-gem" title="This user is domain admin"></i> ' + user["name"]
+            if user["name"] in admin_list
+            else '<i class="bi bi-person-fill"></i> ' + user["name"],
+            "last logon": days_format(user.get("logon", -1), arguments.renewal_password),
+            "Last password change": days_format(user.get("pwdLastChange", -1), arguments.renewal_password),
+            "Account Creation Date": days_format(user.get("creationDate", -1), arguments.renewal_password)
+        }
         data.append(tmp_dict)
+
     grid.setData(data)
     page.addComponent(grid)
     page.render()

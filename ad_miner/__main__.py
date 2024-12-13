@@ -113,7 +113,7 @@ def prepare_render(arguments) -> None:
         arguments: Parsed command line arguments.
     """
 
-    folder_name = Path(f"render_{arguments.cache_prefix}")
+    folder_name = Path(f"reports/{arguments.cache_prefix}")
 
     if folder_name.exists():
         shutil.rmtree(folder_name)

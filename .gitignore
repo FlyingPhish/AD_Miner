@@ -173,3 +173,8 @@ cython_debug/
 
 # VS Code
 .vscode/
+
+# Other
+reports/*
+!/reports/.gitkeep
+.DS_Store

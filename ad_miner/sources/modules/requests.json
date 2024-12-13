@@ -508,12 +508,12 @@
     },
     "nb_enabled_accounts": {
         "name": "Number of domain accounts enabled",
-        "request": "MATCH p=(u:User{enabled:true} ) RETURN DISTINCT(u.domain) AS domain, u.name AS name, toInteger(($extract_date$ - u.lastlogontimestamp)/86400) AS logon ORDER BY u.domain",
+        "request": "MATCH p=(u:User{enabled:true} ) RETURN DISTINCT(u.domain) AS domain, u.name AS name, toInteger(($extract_date$ - u.lastlogontimestamp)/86400) AS logon, toInteger(($extract_date$ - u.pwdlastset)/86400) AS pwdLastChange, toInteger(($extract_date$ - u.whencreated)/86400) AS creationDate ORDER BY u.domain",
         "output_type": "dict"
     },
     "nb_disabled_accounts": {
         "name": "Number of domain accounts disabled",
-        "request": "MATCH p=(u:User{enabled:false} ) RETURN DISTINCT(u.domain) AS domain, u.name AS name, toInteger(($extract_date$ - u.lastlogontimestamp)/86400) AS logon ORDER BY u.domain",
+        "request": "MATCH p=(u:User{enabled:false} ) RETURN DISTINCT(u.domain) AS domain, u.name AS name, toInteger(($extract_date$ - u.lastlogontimestamp)/86400) AS logon, toInteger(($extract_date$ - u.pwdlastset)/86400) AS pwdLastChange, toInteger(($extract_date$ - u.whencreated)/86400) AS creationDate ORDER BY u.domain",
         "output_type": "dict"
     },
     "nb_groups": {
